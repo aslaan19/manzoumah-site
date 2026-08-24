@@ -5,9 +5,48 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import content from "@/content/site.json";
 
 type FormErrors = Partial<Record<"organization" | "contactName" | "role" | "mobile" | "service" | "summary", string>>;
+type IntroPhase = "visible" | "leaving" | "hidden";
 
 function ArrowIcon() {
   return <span className="arrow" aria-hidden="true">←</span>;
+}
+
+function BrandIntro({ phase, onSkip }: { phase: IntroPhase; onSkip: () => void }) {
+  if (phase === "hidden") return null;
+
+  return (
+    <div className={`brand-intro intro-${phase}`} role="status" aria-label={content.intro.ariaLabel}>
+      <div className="intro-blueprint" aria-hidden="true">
+        <span className="intro-ring intro-ring-one" />
+        <span className="intro-ring intro-ring-two" />
+        <span className="intro-axis intro-axis-one" />
+        <span className="intro-axis intro-axis-two" />
+      </div>
+      <div className="intro-stage">
+        <p className="intro-eyebrow">{content.intro.eyebrow}</p>
+        <div className="intro-symbol" aria-hidden="true">
+          <i /><i /><i /><i />
+        </div>
+        <div className="intro-logo-reveal">
+          <Image
+            className="intro-logo"
+            src={content.brand.logoHorizontal}
+            width={1600}
+            height={489}
+            alt={content.brand.logoAlt}
+            priority
+          />
+        </div>
+        <h2>{content.intro.headline}</h2>
+      </div>
+      <div className="intro-progress" aria-hidden="true">
+        <div><span /></div>
+        <p>{content.intro.progress}</p>
+        <b>{content.intro.step}</b>
+      </div>
+      <button className="intro-skip" type="button" onClick={onSkip}>{content.intro.skip}</button>
+    </div>
+  );
 }
 
 function ProcessDiagram({ steps, label, id }: { steps: string[]; label: string; id: string }) {
@@ -126,6 +165,7 @@ function ContactForm() {
 }
 
 export default function Home() {
+  const [introPhase, setIntroPhase] = useState<IntroPhase>("visible");
   const availableMetrics = useMemo(
     () => content.metrics.items.filter((item) => item.value && !item.value.startsWith("[[")),
     [],
@@ -150,10 +190,50 @@ export default function Home() {
     };
   }, []);
 
+  useEffect(() => {
+    const introKey = "manzoumah-intro-seen";
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const alreadySeen = window.sessionStorage.getItem(introKey) === "1";
+
+    if (reducedMotion || alreadySeen) {
+      const quickHideTimer = window.setTimeout(() => {
+        setIntroPhase("hidden");
+        document.body.classList.add("site-ready");
+      }, 0);
+      return () => window.clearTimeout(quickHideTimer);
+    }
+
+    document.body.classList.add("intro-open");
+    const leaveTimer = window.setTimeout(() => setIntroPhase("leaving"), 2300);
+    const hideTimer = window.setTimeout(() => {
+      setIntroPhase("hidden");
+      document.body.classList.remove("intro-open");
+      document.body.classList.add("site-ready");
+      window.sessionStorage.setItem(introKey, "1");
+    }, 3150);
+
+    return () => {
+      window.clearTimeout(leaveTimer);
+      window.clearTimeout(hideTimer);
+      document.body.classList.remove("intro-open");
+    };
+  }, []);
+
+  function skipIntro() {
+    window.sessionStorage.setItem("manzoumah-intro-seen", "1");
+    setIntroPhase("leaving");
+    window.setTimeout(() => {
+      setIntroPhase("hidden");
+      document.body.classList.remove("intro-open");
+      document.body.classList.add("site-ready");
+    }, 700);
+  }
+
   return (
     <>
+      <BrandIntro phase={introPhase} onSkip={skipIntro} />
       <a className="skip-link" href="#main-content">{content.accessibility.skipToContent}</a>
-      <header className="site-header">
+      <header className={`site-header ${introPhase === "hidden" ? "site-ready" : ""}`}>
         <div className="shell header-inner">
           <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>
             <Image
@@ -174,7 +254,9 @@ export default function Home() {
       </header>
 
       <main id="main-content">
-        <section className="hero" id="top">
+        <section className={`hero ${introPhase === "hidden" ? "hero-ready" : ""}`} id="top">
+          <div className="hero-gridlines" aria-hidden="true" />
+          <div className="hero-orbit" aria-hidden="true"><i /><i /><i /><i /></div>
           <div className="hero-ghost" aria-hidden="true">الإسناد</div>
           <div className="shell hero-grid">
             <div className="hero-copy">
