@@ -8,7 +8,6 @@
 
 ## عناصر تحتاج إلى استكمال
 
-- `[[SITE_URL]]` في `content/site.json` ضمن `seo.siteUrl`: ضع رابط النطاق النهائي. يؤثر في الرابط الأساسي وOpen Graph وخريطة الموقع وrobots.txt.
 - `[[ORGANIZATIONS_SERVED]]` في `content/site.json` ضمن `metrics.items`: ضع عدد الجهات المخدومة عند اعتماده.
 - `[[PROJECTS_DELIVERED]]` في `content/site.json` ضمن `metrics.items`: ضع عدد المشاريع المنجزة عند اعتماده.
 - `[[CONTRACT_VALUE_SUPPORTED]]` في `content/site.json` ضمن `metrics.items`: ضع قيمة العقود المدعومة عند اعتمادها.
