@@ -1,0 +1,347 @@
+"use client";
+
+import Image from "next/image";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import content from "@/content/site.json";
+
+type FormErrors = Partial<Record<"organization" | "contactName" | "role" | "mobile" | "service" | "summary", string>>;
+
+function ArrowIcon() {
+  return <span className="arrow" aria-hidden="true">←</span>;
+}
+
+function ProcessDiagram({ steps, label, id }: { steps: string[]; label: string; id: string }) {
+  const positions = [810, 630, 450, 270, 90];
+
+  return (
+    <div className="process-wrap">
+      <svg className="process-svg" viewBox="0 0 900 170" role="img" aria-label={label}>
+        <defs>
+          <marker id={`arrow-${id}`} markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,4 L0,8 Z" fill="currentColor" />
+          </marker>
+        </defs>
+        {positions.slice(0, -1).map((position, index) => (
+          <line key={position} x1={position - 60} y1="85" x2={positions[index + 1] + 60} y2="85" markerEnd={`url(#arrow-${id})`} />
+        ))}
+        {steps.map((step, index) => (
+          <g key={step} transform={`translate(${positions[index]} 85)`}>
+            <circle r="58" />
+            <text x="0" y="5" textAnchor="middle" direction="rtl">{step}</text>
+          </g>
+        ))}
+      </svg>
+      <ol className="process-mobile" aria-label={label}>
+        {steps.map((step) => <li key={step}>{step}</li>)}
+      </ol>
+    </div>
+  );
+}
+
+function ContactForm() {
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const values = {
+      organization: String(form.get("organization") || "").trim(),
+      contactName: String(form.get("contactName") || "").trim(),
+      role: String(form.get("role") || "").trim(),
+      mobile: String(form.get("mobile") || "").replace(/[\s-]/g, ""),
+      service: String(form.get("service") || "").trim(),
+      summary: String(form.get("summary") || "").trim(),
+    };
+    const nextErrors: FormErrors = {};
+    const requiredKeys = ["organization", "contactName", "role", "service"] as const;
+    requiredKeys.forEach((key) => {
+      if (!values[key]) nextErrors[key] = content.contact.errors.required;
+    });
+    if (!/^(?:05\d{8}|\+9665\d{8})$/.test(values.mobile)) nextErrors.mobile = content.contact.errors.mobile;
+    if (values.summary.length < 10) nextErrors.summary = content.contact.errors.summary;
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
+    const labels = content.contact.messageLabels;
+    const message = [
+      content.contact.messageIntro,
+      "",
+      `${labels.organization}: ${values.organization}`,
+      `${labels.contactName}: ${values.contactName}`,
+      `${labels.role}: ${values.role}`,
+      `${labels.mobile}: ${values.mobile}`,
+      `${labels.service}: ${values.service}`,
+      `${labels.summary}: ${values.summary}`,
+    ].join("\n");
+    window.open(`${content.brand.whatsappUrl}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  }
+
+  const fields = content.contact.fields;
+  return (
+    <form className="contact-form" onSubmit={handleSubmit} noValidate>
+      <div className="form-heading">
+        <h3>{content.contact.formTitle}</h3>
+        <p>{content.contact.requiredNote}</p>
+      </div>
+      <div className="form-grid">
+        <label>
+          <span>{fields.organization}</span>
+          <input name="organization" autoComplete="organization" aria-invalid={Boolean(errors.organization)} />
+          {errors.organization && <small className="field-error">{errors.organization}</small>}
+        </label>
+        <label>
+          <span>{fields.contactName}</span>
+          <input name="contactName" autoComplete="name" aria-invalid={Boolean(errors.contactName)} />
+          {errors.contactName && <small className="field-error">{errors.contactName}</small>}
+        </label>
+        <label>
+          <span>{fields.role}</span>
+          <input name="role" autoComplete="organization-title" aria-invalid={Boolean(errors.role)} />
+          {errors.role && <small className="field-error">{errors.role}</small>}
+        </label>
+        <label>
+          <span>{fields.mobile}</span>
+          <input name="mobile" inputMode="tel" autoComplete="tel" dir="ltr" placeholder={fields.mobilePlaceholder} aria-invalid={Boolean(errors.mobile)} />
+          {errors.mobile && <small className="field-error">{errors.mobile}</small>}
+        </label>
+        <label className="form-full">
+          <span>{fields.service}</span>
+          <select name="service" defaultValue="" aria-invalid={Boolean(errors.service)}>
+            <option value="" disabled>{fields.servicePlaceholder}</option>
+            {content.contact.serviceOptions.map((option) => <option value={option} key={option}>{option}</option>)}
+          </select>
+          {errors.service && <small className="field-error">{errors.service}</small>}
+        </label>
+        <label className="form-full">
+          <span>{fields.summary}</span>
+          <textarea name="summary" rows={4} placeholder={fields.summaryPlaceholder} aria-invalid={Boolean(errors.summary)} />
+          {errors.summary && <small className="field-error">{errors.summary}</small>}
+        </label>
+      </div>
+      <button className="button button-primary form-submit" type="submit">
+        <span>{content.contact.submit}</span><ArrowIcon />
+      </button>
+    </form>
+  );
+}
+
+export default function Home() {
+  const availableMetrics = useMemo(
+    () => content.metrics.items.filter((item) => item.value && !item.value.startsWith("[[")),
+    [],
+  );
+
+  useEffect(() => {
+    document.documentElement.classList.add("motion-ready");
+    const elements = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+    const observer = new IntersectionObserver(
+      (entries) => entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      }),
+      { threshold: 0.12 },
+    );
+    elements.forEach((element) => observer.observe(element));
+    return () => {
+      observer.disconnect();
+      document.documentElement.classList.remove("motion-ready");
+    };
+  }, []);
+
+  return (
+    <>
+      <a className="skip-link" href="#main-content">{content.accessibility.skipToContent}</a>
+      <header className="site-header">
+        <div className="shell header-inner">
+          <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>{content.brand.name}</a>
+          <nav aria-label={content.navigation.label}>
+            {content.navigation.items.map((item, index) => (
+              <a className={index < 3 ? "nav-wide" : ""} href={item.href} key={item.href}>{item.label}</a>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      <main id="main-content">
+        <section className="hero" id="top">
+          <div className="shell hero-grid">
+            <div className="hero-copy">
+              <p className="eyebrow hero-eyebrow">{content.hero.eyebrow}</p>
+              <h1>{content.hero.title}</h1>
+              <p className="lead">{content.hero.description}</p>
+              <div className="hero-actions">
+                <a className="button button-primary" href={content.brand.whatsappUrl} target="_blank" rel="noreferrer">
+                  <span>{content.hero.primaryCta}</span><ArrowIcon />
+                </a>
+                <a className="button button-secondary" href="#services">
+                  <span>{content.hero.secondaryCta}</span><ArrowIcon />
+                </a>
+              </div>
+            </div>
+            <div className="journey-card" aria-label={content.hero.journeyLabel}>
+              <p>{content.hero.journeyLabel}</p>
+              {content.hero.journeySteps.map((step, index) => (
+                <div className="journey-step" key={step}>
+                  <span>{String(index + 1).padStart(2, "0")}</span><strong>{step}</strong>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="hero-rule" aria-hidden="true" />
+        </section>
+
+        <section className="trust" aria-labelledby="trust-heading">
+          <div className="shell trust-grid">
+            <div>
+              <p className="eyebrow dark" id="trust-heading">{content.trust.title}</p>
+              <small>{content.trust.note}</small>
+            </div>
+            <div className="trust-names">
+              {content.trust.organizations.map((organization) => (
+                <div className="trust-item" key={organization.name}>
+                  {organization.logo ? (
+                    <Image src={organization.logo} width={180} height={64} alt={organization.name} />
+                  ) : <span>{organization.name}</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="section delegation" id="delegation">
+          <div className="shell grid-12 reveal">
+            <div className="section-index"><span>01</span></div>
+            <div className="section-heading">
+              <p className="eyebrow dark">{content.delegation.eyebrow}</p>
+              <h2>{content.delegation.title}</h2>
+            </div>
+            <div className="delegation-copy">
+              {content.delegation.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            </div>
+          </div>
+        </section>
+
+        <section className="services" id="services">
+          <div className="shell services-intro reveal">
+            <p className="eyebrow">{content.servicesIntro.eyebrow}</p>
+            <h2>{content.servicesIntro.title}</h2>
+            <p>{content.servicesIntro.description}</p>
+          </div>
+
+          {content.services.map((service, serviceIndex) => (
+            <article className="service" key={service.number}>
+              <div className="shell reveal">
+                <div className="service-head grid-12">
+                  <div className="service-number">{service.number}</div>
+                  <h3>{service.title}</h3>
+                  <p>{service.description}</p>
+                </div>
+                <div className="service-deliverables grid-12">
+                  <h4>{service.deliverablesTitle}</h4>
+                  <div className="deliverable-list">
+                    {service.deliverables.map((deliverable, index) => (
+                      <div className="deliverable" key={deliverable.title}>
+                        <span>{String(index + 1).padStart(2, "0")}</span>
+                        <div><strong>{deliverable.title}</strong><p>{deliverable.description}</p></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <ProcessDiagram steps={service.process} label={service.diagramLabel} id={`service-${serviceIndex}`} />
+                <div className="diagnostic grid-12">
+                  <h4>{service.diagnosticTitle}</h4>
+                  <ul>
+                    {service.questions.map((question) => <li key={question}>{question}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </article>
+          ))}
+        </section>
+
+        <section className="section methodology" id="methodology">
+          <div className="shell reveal">
+            <div className="section-title-row grid-12">
+              <p className="eyebrow dark">{content.methodology.eyebrow}</p>
+              <h2>{content.methodology.title}</h2>
+            </div>
+            <ol className="method-steps">
+              {content.methodology.steps.map((step) => (
+                <li key={step.number}>
+                  <span>{step.number}</span><h3>{step.title}</h3><p>{step.description}</p>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="section why-us" id="why-us">
+          <div className="shell reveal">
+            <div className="section-title-row grid-12">
+              <p className="eyebrow">{content.whyUs.eyebrow}</p>
+              <h2>{content.whyUs.title}</h2>
+            </div>
+            <div className="why-grid">
+              {content.whyUs.points.map((point) => (
+                <article key={point.number}>
+                  <span>{point.number}</span><h3>{point.title}</h3><p>{point.description}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {availableMetrics.length > 0 && (
+          <section className="metrics" aria-labelledby="metrics-heading">
+            <div className="shell reveal">
+              <h2 id="metrics-heading">{content.metrics.title}</h2>
+              <div className="metrics-grid">
+                {availableMetrics.map((metric) => <div key={metric.label}><strong>{metric.value}</strong><span>{metric.label}</span></div>)}
+              </div>
+            </div>
+          </section>
+        )}
+
+        <section className="section contact" id="contact">
+          <div className="shell reveal">
+            <div className="contact-heading grid-12">
+              <p className="eyebrow dark">{content.contact.eyebrow}</p>
+              <h2>{content.contact.title}</h2>
+              <p>{content.contact.description}</p>
+            </div>
+            <div className="contact-layout">
+              <ContactForm />
+              <aside className="direct-contact">
+                <div>
+                  <h3>{content.contact.directTitle}</h3>
+                  <p>{content.contact.directDescription}</p>
+                </div>
+                <a className="direct-whatsapp" href={content.brand.whatsappUrl} target="_blank" rel="noreferrer">
+                  <span>{content.contact.whatsappCta}</span><ArrowIcon />
+                </a>
+                <dl>
+                  <div><dt>{content.contact.phoneLabel}</dt><dd><a dir="ltr" href={content.brand.phoneHref}>{content.brand.phoneDisplay}</a></dd></div>
+                  <div><dt>{content.contact.addressLabel}</dt><dd>{content.brand.address}</dd></div>
+                </dl>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div className="shell footer-grid">
+          <div><a className="wordmark" href="#top">{content.brand.name}</a><p>{content.brand.tagline}</p></div>
+          <div><a dir="ltr" href={content.brand.phoneHref}>{content.brand.phoneDisplay}</a><p>{content.brand.address}</p></div>
+          <div><p>{content.footer.founded}</p><p>{content.footer.copyright}</p><a href="#top">{content.footer.backToTop} <ArrowIcon /></a></div>
+        </div>
+      </footer>
+
+      <a className="floating-whatsapp" href={content.brand.whatsappUrl} target="_blank" rel="noreferrer" aria-label={content.accessibility.floatingWhatsapp}>
+        <span>{content.hero.primaryCta}</span><ArrowIcon />
+      </a>
+    </>
+  );
+}
