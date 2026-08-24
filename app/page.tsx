@@ -155,10 +155,12 @@ export default function Home() {
       <a className="skip-link" href="#main-content">{content.accessibility.skipToContent}</a>
       <header className="site-header">
         <div className="shell header-inner">
-          <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>{content.brand.name}</a>
+          <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>
+            <span className="brand-mark" aria-hidden="true">م</span><span>{content.brand.name}</span>
+          </a>
           <nav aria-label={content.navigation.label}>
             {content.navigation.items.map((item, index) => (
-              <a className={index < 3 ? "nav-wide" : ""} href={item.href} key={item.href}>{item.label}</a>
+              <a className={`${index < 3 ? "nav-wide" : ""} ${index === content.navigation.items.length - 1 ? "nav-cta" : ""}`} href={item.href} key={item.href}>{item.label}</a>
             ))}
           </nav>
         </div>
@@ -166,10 +168,16 @@ export default function Home() {
 
       <main id="main-content">
         <section className="hero" id="top">
+          <div className="hero-ghost" aria-hidden="true">الإسناد</div>
           <div className="shell hero-grid">
             <div className="hero-copy">
               <p className="eyebrow hero-eyebrow">{content.hero.eyebrow}</p>
-              <h1>{content.hero.title}</h1>
+              <h1>
+                <span>{content.hero.titleLineOne}</span>
+                <em>{content.hero.titleAccent}</em>
+                <span>{content.hero.titleLineTwo}</span>
+                <strong>{content.hero.titleTail}</strong>
+              </h1>
               <p className="lead">{content.hero.description}</p>
               <div className="hero-actions">
                 <a className="button button-primary" href={content.brand.whatsappUrl} target="_blank" rel="noreferrer">
@@ -189,7 +197,11 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <div className="hero-rule" aria-hidden="true" />
+          <div className="shell hero-statement">
+            <strong>{content.hero.statementLabel}</strong>
+            <p>{content.hero.statement}</p>
+            <span aria-hidden="true">↙</span>
+          </div>
         </section>
 
         <section className="trust" aria-labelledby="trust-heading">
@@ -211,22 +223,33 @@ export default function Home() {
         </section>
 
         <section className="section delegation" id="delegation">
-          <div className="shell grid-12 reveal">
-            <div className="section-index"><span>01</span></div>
-            <div className="section-heading">
-              <p className="eyebrow dark">{content.delegation.eyebrow}</p>
-              <h2>{content.delegation.title}</h2>
+          <div className="shell reveal">
+            <div className="delegation-top grid-12">
+              <div className="section-index"><span>01</span></div>
+              <div className="section-heading">
+                <p className="eyebrow dark">{content.delegation.eyebrow}</p>
+                <h2>{content.delegation.title}</h2>
+              </div>
+              <div className="delegation-copy">
+                {content.delegation.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              </div>
             </div>
-            <div className="delegation-copy">
-              {content.delegation.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            <div className="outcome-grid">
+              {content.delegation.outcomes.map((outcome, index) => (
+                <article key={outcome.title}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <h3>{outcome.title}</h3>
+                  <p>{outcome.description}</p>
+                </article>
+              ))}
             </div>
           </div>
         </section>
 
         <section className="services" id="services">
           <div className="shell services-intro reveal">
-            <p className="eyebrow">{content.servicesIntro.eyebrow}</p>
-            <h2>{content.servicesIntro.title}</h2>
+            <span className="services-number">{content.servicesIntro.number}</span>
+            <div><p className="eyebrow">{content.servicesIntro.eyebrow}</p><h2>{content.servicesIntro.title}</h2></div>
             <p>{content.servicesIntro.description}</p>
           </div>
 
@@ -235,7 +258,7 @@ export default function Home() {
               <div className="shell reveal">
                 <div className="service-head grid-12">
                   <div className="service-number">{service.number}</div>
-                  <h3>{service.title}</h3>
+                  <div className="service-title"><span>{content.servicesIntro.serviceLabel}</span><h3>{service.title}</h3></div>
                   <p>{service.description}</p>
                 </div>
                 <div className="service-deliverables grid-12">
@@ -259,6 +282,11 @@ export default function Home() {
               </div>
             </article>
           ))}
+          <div className="shell services-outro reveal">
+            <p className="eyebrow">{content.servicesOutro.eyebrow}</p>
+            <h3>{content.servicesOutro.title}</h3>
+            <a className="button button-primary" href="#contact"><span>{content.servicesOutro.cta}</span><ArrowIcon /></a>
+          </div>
         </section>
 
         <section className="section methodology" id="methodology">

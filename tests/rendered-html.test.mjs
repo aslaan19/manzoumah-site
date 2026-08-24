@@ -17,7 +17,8 @@ test("renders the Arabic RTL portfolio", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /<html[^>]*lang="ar"[^>]*dir="rtl"/);
-  assert.match(html, /من التأهيل إلى التنفيذ/);
+  assert.match(html, /جاهزية تقود/);
+  assert.match(html, /تنفيذ يصنع/);
   assert.match(html, /https:\/\/wa\.me\/966590813714/);
   assert.match(html, /application\/ld\+json/);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|Your site is taking shape/);
