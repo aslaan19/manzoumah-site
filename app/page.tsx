@@ -156,7 +156,14 @@ export default function Home() {
       <header className="site-header">
         <div className="shell header-inner">
           <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>
-            <span className="brand-mark" aria-hidden="true">م</span><span>{content.brand.name}</span>
+            <Image
+              className="brand-logo brand-logo-header"
+              src={content.brand.logoHorizontal}
+              width={1600}
+              height={489}
+              alt={content.brand.logoAlt}
+              priority
+            />
           </a>
           <nav aria-label={content.navigation.label}>
             {content.navigation.items.map((item, index) => (
@@ -361,7 +368,18 @@ export default function Home() {
 
       <footer>
         <div className="shell footer-grid">
-          <div><a className="wordmark" href="#top">{content.brand.name}</a><p>{content.brand.tagline}</p></div>
+          <div>
+            <a className="footer-brand" href="#top" aria-label={content.navigation.homeLabel}>
+              <Image
+                className="brand-logo brand-logo-footer"
+                src={content.brand.logoStacked}
+                width={1600}
+                height={1536}
+                alt={content.brand.logoAlt}
+              />
+            </a>
+            <p>{content.brand.tagline}</p>
+          </div>
           <div><a dir="ltr" href={content.brand.phoneHref}>{content.brand.phoneDisplay}</a><p>{content.brand.address}</p></div>
           <div><p>{content.footer.founded}</p><p>{content.footer.copyright}</p><a href="#top">{content.footer.backToTop} <ArrowIcon /></a></div>
         </div>

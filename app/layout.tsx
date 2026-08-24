@@ -74,7 +74,7 @@ const organizationSchema = {
   description: content.seo.description,
   foundingDate: content.brand.founded,
   telephone: content.brand.phoneDisplay,
-  ...(configuredUrl ? { url: configuredUrl } : {}),
+  ...(configuredUrl ? { url: configuredUrl, logo: `${configuredUrl}${content.brand.logoHorizontal}` } : {}),
   address: {
     "@type": "PostalAddress",
     streetAddress: "حي إشبيلية",

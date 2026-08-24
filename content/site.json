@@ -2,6 +2,9 @@
   "brand": {
     "name": "منظومة",
     "nameLatin": "Manzoumah",
+    "logoHorizontal": "/brand/manzoumah-horizontal.jpeg",
+    "logoStacked": "/brand/manzoumah-stacked.jpeg",
+    "logoAlt": "منظومة Manzoma",
     "tagline": "استشارات الإسناد الحكومي للقطاع غير الربحي",
     "founded": "2024",
     "phoneDisplay": "+966 59 081 3714",
