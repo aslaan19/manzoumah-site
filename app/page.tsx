@@ -182,6 +182,7 @@ export default function Home() {
     );
     elements.forEach((element) => observer.observe(element));
 
+    const impactScene = document.querySelector<HTMLElement>(".impact-sequence");
     let scrollFrame = 0;
     const updateScrollProgress = () => {
       if (scrollFrame) return;
@@ -189,6 +190,14 @@ export default function Home() {
         const scrollable = document.documentElement.scrollHeight - window.innerHeight;
         const progress = scrollable > 0 ? Math.min(1, window.scrollY / scrollable) : 0;
         document.documentElement.style.setProperty("--page-progress", String(progress));
+        if (impactScene) {
+          const bounds = impactScene.getBoundingClientRect();
+          const travel = Math.max(1, impactScene.offsetHeight - window.innerHeight);
+          const sceneProgress = Math.min(1, Math.max(0, -bounds.top / travel));
+          const activeStep = Math.min(3, Math.floor(sceneProgress * 4));
+          impactScene.style.setProperty("--impact-progress", String(sceneProgress));
+          impactScene.dataset.step = String(activeStep);
+        }
         scrollFrame = 0;
       });
     };
@@ -326,6 +335,39 @@ export default function Home() {
                   ) : <span>{organization.name}</span>}
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="impact-sequence" data-step="0" aria-label={content.impactSequence.ariaLabel}>
+          <div className="impact-sticky">
+            <div className="impact-ghost" aria-hidden="true">{content.brand.name}</div>
+            <div className="shell impact-shell">
+              <div className="impact-intro">
+                <p className="eyebrow">{content.impactSequence.eyebrow}</p>
+                <h2>{content.impactSequence.title}</h2>
+                <p>{content.impactSequence.description}</p>
+              </div>
+              <div className="impact-stage">
+                <div className="impact-mark" aria-hidden="true"><i /><i /><i /><i /></div>
+                <ol className="impact-steps">
+                  {content.impactSequence.steps.map((step) => (
+                    <li className="impact-step" key={step.number}>
+                      <span>{step.number}</span>
+                      <p>{step.kicker}</p>
+                      <h3>{step.title}</h3>
+                      <div>{step.description}</div>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+              <div className="impact-footer">
+                <div className="impact-progress-line"><span /></div>
+                <div className="impact-nav" aria-hidden="true">
+                  {content.impactSequence.steps.map((step) => <span key={step.number}>{step.number}</span>)}
+                </div>
+                <p>{content.impactSequence.scrollHint}</p>
+              </div>
             </div>
           </div>
         </section>
