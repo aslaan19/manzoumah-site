@@ -2,6 +2,7 @@
   "brand": {
     "name": "منظومة",
     "nameLatin": "Manzoumah",
+    "logoTransparent": "/brand/manzoma-transparent.png",
     "logoHorizontal": "/brand/manzoumah-horizontal.jpeg",
     "logoStacked": "/brand/manzoumah-stacked.jpeg",
     "logoAlt": "منظومة Manzoma",
@@ -44,7 +45,10 @@
     "journeyLabel": "من الفرصة إلى الأثر",
     "journeySteps": ["جاهزية", "منافسة", "تشغيل", "أثر"],
     "statementLabel": "إسناد حكومي. أثر مجتمعي.",
-    "statement": "الإسناد يفتح للمنظمات غير الربحية دوراً أوسع في تقديم الخدمات الموجهة للمجتمع، بعلاقة تعاقدية ترفع الجودة وتدعم الاستدامة."
+    "statement": "الإسناد يفتح للمنظمات غير الربحية دوراً أوسع في تقديم الخدمات الموجهة للمجتمع، بعلاقة تعاقدية ترفع الجودة وتدعم الاستدامة.",
+    "practiceLabel": "Government Delegation Advisory",
+    "locationLabel": "الرياض — المملكة العربية السعودية",
+    "scrollLabel": "اكتشف المنظومة"
   },
   "trust": {
     "title": "من عملوا معنا",

@@ -24,15 +24,12 @@ function BrandIntro({ phase, onSkip }: { phase: IntroPhase; onSkip: () => void }
       </div>
       <div className="intro-stage">
         <p className="intro-eyebrow">{content.intro.eyebrow}</p>
-        <div className="intro-symbol" aria-hidden="true">
-          <i /><i /><i /><i />
-        </div>
         <div className="intro-logo-reveal">
           <Image
             className="intro-logo"
-            src={content.brand.logoHorizontal}
-            width={1600}
-            height={489}
+            src={content.brand.logoTransparent}
+            width={512}
+            height={487}
             alt={content.brand.logoAlt}
             priority
           />
@@ -184,8 +181,23 @@ export default function Home() {
       { threshold: 0.12 },
     );
     elements.forEach((element) => observer.observe(element));
+
+    let scrollFrame = 0;
+    const updateScrollProgress = () => {
+      if (scrollFrame) return;
+      scrollFrame = window.requestAnimationFrame(() => {
+        const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = scrollable > 0 ? Math.min(1, window.scrollY / scrollable) : 0;
+        document.documentElement.style.setProperty("--page-progress", String(progress));
+        scrollFrame = 0;
+      });
+    };
+    updateScrollProgress();
+    window.addEventListener("scroll", updateScrollProgress, { passive: true });
     return () => {
       observer.disconnect();
+      window.removeEventListener("scroll", updateScrollProgress);
+      window.cancelAnimationFrame(scrollFrame);
       document.documentElement.classList.remove("motion-ready");
     };
   }, []);
@@ -204,13 +216,13 @@ export default function Home() {
     }
 
     document.body.classList.add("intro-open");
-    const leaveTimer = window.setTimeout(() => setIntroPhase("leaving"), 2300);
+    const leaveTimer = window.setTimeout(() => setIntroPhase("leaving"), 1700);
     const hideTimer = window.setTimeout(() => {
       setIntroPhase("hidden");
       document.body.classList.remove("intro-open");
       document.body.classList.add("site-ready");
       window.sessionStorage.setItem(introKey, "1");
-    }, 3150);
+    }, 2450);
 
     return () => {
       window.clearTimeout(leaveTimer);
@@ -232,15 +244,16 @@ export default function Home() {
   return (
     <>
       <BrandIntro phase={introPhase} onSkip={skipIntro} />
+      <div className="page-progress" aria-hidden="true"><span /></div>
       <a className="skip-link" href="#main-content">{content.accessibility.skipToContent}</a>
       <header className={`site-header ${introPhase === "hidden" ? "site-ready" : ""}`}>
         <div className="shell header-inner">
           <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>
             <Image
               className="brand-logo brand-logo-header"
-              src={content.brand.logoHorizontal}
-              width={1600}
-              height={489}
+              src={content.brand.logoTransparent}
+              width={512}
+              height={487}
               alt={content.brand.logoAlt}
               priority
             />
@@ -256,8 +269,11 @@ export default function Home() {
       <main id="main-content">
         <section className={`hero ${introPhase === "hidden" ? "hero-ready" : ""}`} id="top">
           <div className="hero-gridlines" aria-hidden="true" />
-          <div className="hero-orbit" aria-hidden="true"><i /><i /><i /><i /></div>
           <div className="hero-ghost" aria-hidden="true">الإسناد</div>
+          <div className="hero-meta" aria-hidden="true">
+            <span>{content.hero.practiceLabel}</span>
+            <span>{content.hero.locationLabel}</span>
+          </div>
           <div className="shell hero-grid">
             <div className="hero-copy">
               <p className="eyebrow hero-eyebrow">{content.hero.eyebrow}</p>
@@ -277,20 +293,23 @@ export default function Home() {
                 </a>
               </div>
             </div>
-            <div className="journey-card" aria-label={content.hero.journeyLabel}>
-              <p>{content.hero.journeyLabel}</p>
+            <aside className="journey-card" aria-label={content.hero.journeyLabel}>
+              <div className="journey-heading"><span>01 / 04</span><p>{content.hero.journeyLabel}</p></div>
+              <ol>
               {content.hero.journeySteps.map((step, index) => (
-                <div className="journey-step" key={step}>
+                <li className="journey-step" key={step}>
                   <span>{String(index + 1).padStart(2, "0")}</span><strong>{step}</strong>
-                </div>
+                </li>
               ))}
-            </div>
+              </ol>
+            </aside>
           </div>
           <div className="shell hero-statement">
             <strong>{content.hero.statementLabel}</strong>
             <p>{content.hero.statement}</p>
             <span aria-hidden="true">↙</span>
           </div>
+          <a className="hero-scroll" href="#delegation"><span>{content.hero.scrollLabel}</span><i aria-hidden="true" /></a>
         </section>
 
         <section className="trust" aria-labelledby="trust-heading">
@@ -344,29 +363,31 @@ export default function Home() {
 
           {content.services.map((service, serviceIndex) => (
             <article className="service" key={service.number}>
-              <div className="shell reveal">
-                <div className="service-head grid-12">
+              <div className="shell service-chapter reveal">
+                <div className="service-sticky">
                   <div className="service-number">{service.number}</div>
                   <div className="service-title"><span>{content.servicesIntro.serviceLabel}</span><h3>{service.title}</h3></div>
                   <p>{service.description}</p>
                 </div>
-                <div className="service-deliverables grid-12">
-                  <h4>{service.deliverablesTitle}</h4>
-                  <div className="deliverable-list">
-                    {service.deliverables.map((deliverable, index) => (
-                      <div className="deliverable" key={deliverable.title}>
-                        <span>{String(index + 1).padStart(2, "0")}</span>
-                        <div><strong>{deliverable.title}</strong><p>{deliverable.description}</p></div>
-                      </div>
-                    ))}
+                <div className="service-body">
+                  <div className="service-deliverables">
+                    <h4>{service.deliverablesTitle}</h4>
+                    <div className="deliverable-list">
+                      {service.deliverables.map((deliverable, index) => (
+                        <div className="deliverable" key={deliverable.title}>
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                          <div><strong>{deliverable.title}</strong><p>{deliverable.description}</p></div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-                <ProcessDiagram steps={service.process} label={service.diagramLabel} id={`service-${serviceIndex}`} />
-                <div className="diagnostic grid-12">
-                  <h4>{service.diagnosticTitle}</h4>
-                  <ul>
-                    {service.questions.map((question) => <li key={question}>{question}</li>)}
-                  </ul>
+                  <ProcessDiagram steps={service.process} label={service.diagramLabel} id={`service-${serviceIndex}`} />
+                  <div className="diagnostic">
+                    <h4>{service.diagnosticTitle}</h4>
+                    <ul>
+                      {service.questions.map((question) => <li key={question}>{question}</li>)}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </article>
@@ -454,9 +475,9 @@ export default function Home() {
             <a className="footer-brand" href="#top" aria-label={content.navigation.homeLabel}>
               <Image
                 className="brand-logo brand-logo-footer"
-                src={content.brand.logoStacked}
-                width={1600}
-                height={1536}
+                src={content.brand.logoTransparent}
+                width={512}
+                height={487}
                 alt={content.brand.logoAlt}
               />
             </a>

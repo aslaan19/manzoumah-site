@@ -40,6 +40,7 @@ test("renders the Arabic RTL portfolio", async () => {
   assert.match(html, /جاهزية تقود/);
   assert.match(html, /تنفيذ يصنع/);
   assert.match(html, /من الجاهزية إلى أثرٍ يُرى/);
+  assert.match(html, /manzoma-transparent\.png/);
   assert.match(html, /https:\/\/wa\.me\/966590813714/);
   assert.match(html, /application\/ld\+json/);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|Your site is taking shape/);
