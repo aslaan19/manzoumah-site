@@ -681,3 +681,111 @@ nav a:not(.nav-cta):hover::after { transform: scaleX(1); }
   .impact-step h3 { font-size: clamp(3rem, 9vw, 5rem); }
   .impact-footer { display: none; }
 }
+
+/* Urgent responsive polish: intact logo, collision-safe type, clean content rail */
+body { overflow-x: hidden; }
+
+.header-inner { min-height: 5.35rem; }
+.wordmark {
+  position: static;
+  width: 8.75rem;
+  height: 4.75rem;
+  flex: 0 0 8.75rem;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-logo-header {
+  position: static;
+  width: 8.75rem;
+  height: 4.75rem;
+  max-width: 100%;
+  object-fit: contain;
+  transform: none;
+}
+
+.hero h1 {
+  display: grid;
+  gap: .2em;
+  line-height: 1.25;
+}
+.hero h1 .hero-title-line {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: .18em;
+  row-gap: .08em;
+  margin: 0;
+  line-height: inherit;
+}
+.hero h1 .hero-title-line > * {
+  display: inline-block;
+  margin: 0;
+  line-height: inherit;
+}
+
+.trust::before { display: none !important; }
+.trust-grid { position: relative; }
+.trust-grid > div:first-child {
+  position: relative;
+  z-index: 1;
+  padding-inline-start: 1.25rem;
+  border-inline-start: 3px solid var(--color-accent);
+}
+
+@media (max-width: 1000px) {
+  .hero h1 {
+    font-size: clamp(3rem, 8.2vw, 5rem);
+    line-height: 1.3;
+  }
+  .impact-shell { padding-block: 5.75rem 1.5rem; }
+  .impact-intro { grid-template-columns: 2fr 5fr 5fr; }
+  .impact-stage { grid-template-columns: minmax(9rem, 4fr) minmax(0, 8fr); gap: clamp(1.5rem, 5vw, 4rem); }
+  .impact-mark { width: clamp(8rem, 19vw, 12rem); }
+  .impact-mark i { width: clamp(1.4rem, 3vw, 2.2rem); }
+  .impact-step h3 { font-size: clamp(3.5rem, 9vw, 6rem); line-height: 1.18; }
+}
+
+@media (max-width: 760px) {
+  .header-inner { min-height: 4.9rem; }
+  .wordmark { width: 7.4rem; height: 4.3rem; flex-basis: 7.4rem; }
+  .brand-logo-header { width: 7.4rem; height: 4.3rem; }
+  .hero h1 {
+    display: grid;
+    gap: .15em;
+    font-size: clamp(2.65rem, 11.8vw, 4rem);
+    line-height: 1.34;
+    letter-spacing: -.02em;
+  }
+  .hero h1 .hero-title-line { column-gap: .14em; row-gap: .04em; }
+  .trust-grid > div:first-child { padding-inline-start: 1rem; }
+  .impact-stage {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(6rem, 20vh) minmax(11rem, 1fr);
+    gap: .65rem;
+  }
+  .impact-mark { width: clamp(6.5rem, 27vw, 9rem); margin: 0 auto; }
+  .impact-mark i { width: clamp(1.3rem, 5vw, 1.8rem); }
+  .impact-steps { height: clamp(11rem, 29vh, 15rem); }
+  .impact-step > p { margin-block: .55rem .1rem; }
+  .impact-step h3 { font-size: clamp(3rem, 16vw, 4.8rem); line-height: 1.22; letter-spacing: -.035em; }
+  .impact-step > div { margin-block-start: .8rem; }
+}
+
+@media (max-height: 680px) {
+  .impact-shell { padding-block: 4.9rem 1rem; }
+  .impact-intro { grid-template-columns: 2fr 10fr; padding-block-end: .75rem; }
+  .impact-intro h2 { font-size: clamp(1.45rem, 4.5vh, 2.2rem); }
+  .impact-intro > p:last-child { display: none; }
+  .impact-stage { grid-template-columns: minmax(7rem, 4fr) minmax(0, 8fr); grid-template-rows: 1fr; gap: 1.5rem; }
+  .impact-mark { width: clamp(6rem, 21vh, 8rem); margin: 0 auto; }
+  .impact-mark i { width: clamp(1.15rem, 4vh, 1.6rem); }
+  .impact-steps { height: min(13rem, 42vh); text-align: start; }
+  .impact-step { align-items: flex-start; }
+  .impact-step > p { margin-block: .45rem .1rem; }
+  .impact-step h3 { font-size: clamp(2.75rem, 11vh, 4.35rem); line-height: 1.18; }
+  .impact-step > div { margin-block-start: .55rem; font-size: .8rem; }
+  .impact-footer { padding-block-start: .75rem; }
+}

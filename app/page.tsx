@@ -260,9 +260,9 @@ export default function Home() {
           <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>
             <Image
               className="brand-logo brand-logo-header"
-              src={content.brand.logoHeader}
-              width={380}
-              height={83}
+              src={content.brand.logoTransparent}
+              width={512}
+              height={487}
               alt={content.brand.logoAlt}
               priority
             />
@@ -287,10 +287,14 @@ export default function Home() {
             <div className="hero-copy">
               <p className="eyebrow hero-eyebrow">{content.hero.eyebrow}</p>
               <h1>
-                <span>{content.hero.titleLineOne}</span>
-                <em>{content.hero.titleAccent}</em>
-                <span>{content.hero.titleLineTwo}</span>
-                <strong>{content.hero.titleTail}</strong>
+                <span className="hero-title-line">
+                  <span>{content.hero.titleLineOne}</span>
+                  <em>{content.hero.titleAccent}</em>
+                </span>
+                <span className="hero-title-line">
+                  <span>{content.hero.titleLineTwo}</span>
+                  <strong>{content.hero.titleTail}</strong>
+                </span>
               </h1>
               <p className="lead">{content.hero.description}</p>
               <div className="hero-actions">
