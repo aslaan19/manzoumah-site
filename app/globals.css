@@ -593,3 +593,14 @@ nav a:not(.nav-cta):hover::after { transform: scaleX(1); }
   .footer-brand { width: 8.5rem; height: 7.7rem; }
   .brand-logo-footer { width: 8.5rem; }
 }
+
+/* Exact supplied header lockup */
+.header-inner { min-height: 4.75rem; }
+.wordmark { position: relative; width: 6rem; height: 2.95rem; flex: 0 0 6rem; overflow: hidden; }
+.brand-logo-header { position: absolute; width: 23.75rem; max-width: none; height: 5.1875rem; left: -12.625rem; top: -.1875rem; transform: none; }
+
+@media (max-width: 760px) {
+  .header-inner { min-height: 4.5rem; }
+  .wordmark { width: 6rem; height: 2.95rem; flex-basis: 6rem; }
+  .brand-logo-header { width: 23.75rem; left: -12.625rem; top: -.1875rem; transform: none; }
+}

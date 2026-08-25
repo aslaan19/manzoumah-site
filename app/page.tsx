@@ -251,9 +251,9 @@ export default function Home() {
           <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>
             <Image
               className="brand-logo brand-logo-header"
-              src={content.brand.logoTransparent}
-              width={512}
-              height={487}
+              src={content.brand.logoHeader}
+              width={380}
+              height={83}
               alt={content.brand.logoAlt}
               priority
             />
