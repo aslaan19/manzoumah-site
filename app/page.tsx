@@ -11,6 +11,18 @@ function ArrowIcon() {
   return <span className="arrow" aria-hidden="true">←</span>;
 }
 
+function KineticRail() {
+  return (
+    <div className="kinetic-rail" aria-hidden="true">
+      <div className="kinetic-rail-track">
+        {[0, 1, 2].flatMap((set) => content.hero.journeySteps.map((step, index) => (
+          <span key={`${set}-${step}`}><i />{step}<b>{String(index + 1).padStart(2, "0")}</b></span>
+        )))}
+      </div>
+    </div>
+  );
+}
+
 function BrandIntro({ phase, onSkip }: { phase: IntroPhase; onSkip: () => void }) {
   if (phase === "hidden") return null;
 
@@ -24,6 +36,7 @@ function BrandIntro({ phase, onSkip }: { phase: IntroPhase; onSkip: () => void }
       </div>
       <div className="intro-stage">
         <p className="intro-eyebrow">{content.intro.eyebrow}</p>
+        <div className="intro-pulse-mark" aria-hidden="true"><i /><i /><i /><i /></div>
         <div className="intro-logo-reveal">
           <Image
             className="intro-logo"
@@ -35,6 +48,11 @@ function BrandIntro({ phase, onSkip }: { phase: IntroPhase; onSkip: () => void }
           />
         </div>
         <h2>{content.intro.headline}</h2>
+        <div className="intro-journey" aria-hidden="true">
+          {content.hero.journeySteps.map((step, index) => (
+            <span key={step}><b>{String(index + 1).padStart(2, "0")}</b>{step}</span>
+          ))}
+        </div>
       </div>
       <div className="intro-progress" aria-hidden="true">
         <div><span /></div>
@@ -183,6 +201,8 @@ export default function Home() {
     elements.forEach((element) => observer.observe(element));
 
     const impactScene = document.querySelector<HTMLElement>(".impact-sequence");
+    const kineticRail = document.querySelector<HTMLElement>(".kinetic-rail");
+    const motionScenes = Array.from(document.querySelectorAll<HTMLElement>("[data-scroll-scene]"));
     let scrollFrame = 0;
     const updateScrollProgress = () => {
       if (scrollFrame) return;
@@ -196,8 +216,19 @@ export default function Home() {
           const sceneProgress = Math.min(1, Math.max(0, -bounds.top / travel));
           const activeStep = Math.min(3, Math.floor(sceneProgress * 4));
           impactScene.style.setProperty("--impact-progress", String(sceneProgress));
+          impactScene.style.setProperty("--impact-rotation", `${sceneProgress * 150}deg`);
           impactScene.dataset.step = String(activeStep);
         }
+        if (kineticRail) {
+          const railBounds = kineticRail.getBoundingClientRect();
+          const railProgress = Math.min(1, Math.max(0, (window.innerHeight - railBounds.top) / (window.innerHeight + railBounds.height)));
+          kineticRail.style.setProperty("--rail-shift", `${railProgress * -22}vw`);
+        }
+        motionScenes.forEach((scene) => {
+          const bounds = scene.getBoundingClientRect();
+          const sceneProgress = Math.min(1, Math.max(0, (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height)));
+          scene.style.setProperty("--scene-shift", `${(sceneProgress - .5) * -90}px`);
+        });
         scrollFrame = 0;
       });
     };
@@ -225,13 +256,13 @@ export default function Home() {
     }
 
     document.body.classList.add("intro-open");
-    const leaveTimer = window.setTimeout(() => setIntroPhase("leaving"), 1700);
+    const leaveTimer = window.setTimeout(() => setIntroPhase("leaving"), 2350);
     const hideTimer = window.setTimeout(() => {
       setIntroPhase("hidden");
       document.body.classList.remove("intro-open");
       document.body.classList.add("site-ready");
       window.sessionStorage.setItem(introKey, "1");
-    }, 2450);
+    }, 3200);
 
     return () => {
       window.clearTimeout(leaveTimer);
@@ -278,6 +309,7 @@ export default function Home() {
       <main id="main-content">
         <section className={`hero ${introPhase === "hidden" ? "hero-ready" : ""}`} id="top">
           <div className="hero-gridlines" aria-hidden="true" />
+          <div className="hero-constellation" aria-hidden="true"><i /><i /><i /><i /></div>
           <div className="hero-ghost" aria-hidden="true">الإسناد</div>
           <div className="hero-meta" aria-hidden="true">
             <span>{content.hero.practiceLabel}</span>
@@ -343,6 +375,8 @@ export default function Home() {
           </div>
         </section>
 
+        <KineticRail />
+
         <section className="impact-sequence" data-step="0" aria-label={content.impactSequence.ariaLabel}>
           <div className="impact-sticky">
             <div className="impact-ghost" aria-hidden="true">{content.brand.name}</div>
@@ -376,7 +410,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section delegation" id="delegation">
+        <section className="section delegation" id="delegation" data-scroll-scene>
           <div className="shell reveal">
             <div className="delegation-top grid-12">
               <div className="section-index"><span>01</span></div>
@@ -400,7 +434,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="services" id="services">
+        <section className="services" id="services" data-scroll-scene>
           <div className="shell services-intro reveal">
             <span className="services-number">{content.servicesIntro.number}</span>
             <div><p className="eyebrow">{content.servicesIntro.eyebrow}</p><h2>{content.servicesIntro.title}</h2></div>
@@ -445,7 +479,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section methodology" id="methodology">
+        <section className="section methodology" id="methodology" data-scroll-scene>
           <div className="shell reveal">
             <div className="section-title-row grid-12">
               <p className="eyebrow dark">{content.methodology.eyebrow}</p>
@@ -461,7 +495,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section why-us" id="why-us">
+        <section className="section why-us" id="why-us" data-scroll-scene>
           <div className="shell reveal">
             <div className="section-title-row grid-12">
               <p className="eyebrow">{content.whyUs.eyebrow}</p>
@@ -488,7 +522,7 @@ export default function Home() {
           </section>
         )}
 
-        <section className="section contact" id="contact">
+        <section className="section contact" id="contact" data-scroll-scene>
           <div className="shell reveal">
             <div className="contact-heading grid-12">
               <p className="eyebrow dark">{content.contact.eyebrow}</p>
