@@ -37,12 +37,62 @@ function BrandIntro({ phase, onSkip }: { phase: IntroPhase; onSkip: () => void }
   );
 }
 
+function KineticRail() {
+  return (
+    <div className="kinetic-rail" aria-hidden="true">
+      <div className="kinetic-rail-track">
+        {[0, 1, 2].flatMap((set) => content.hero.journeySteps.map((step, index) => (
+          <span key={`${set}-${step}`}><i />{step}<b>{String(index + 1).padStart(2, "0")}</b></span>
+        )))}
+      </div>
+    </div>
+  );
+}
+
+function ImpactSequence() {
+  return (
+    <section className="impact-sequence" data-step="0" id="methodology" aria-label={content.impactSequence.ariaLabel}>
+      <div className="impact-sticky">
+        <div className="impact-ghost" aria-hidden="true">MANZOMA</div>
+        <div className="shell impact-shell">
+          <div className="impact-intro">
+            <span className="section-tag">03 / METHOD</span>
+            <p>{content.impactSequence.eyebrow}</p>
+            <h2>{content.impactSequence.title}</h2>
+            <small>{content.impactSequence.description}</small>
+          </div>
+          <div className="impact-stage">
+            <div className="impact-orbit" aria-hidden="true"><BrandMark /></div>
+            <ol className="impact-steps">
+              {content.impactSequence.steps.map((step) => (
+                <li key={step.number}>
+                  <span>{step.number}</span>
+                  <p>{step.kicker}</p>
+                  <h3>{step.title}</h3>
+                  <div>{step.description}</div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="impact-footer">
+            <div className="impact-progress-line" aria-hidden="true"><span /></div>
+            <div className="impact-nav" aria-hidden="true">
+              {content.impactSequence.steps.map((step) => <span key={step.number}>{step.number}</span>)}
+            </div>
+            <p>{content.impactSequence.scrollHint}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [introPhase, setIntroPhase] = useState<IntroPhase>("visible");
 
   useEffect(() => {
     document.documentElement.classList.add("motion-ready");
-    const elements = Array.from(document.querySelectorAll<HTMLElement>(".reveal"));
+    const elements = Array.from(document.querySelectorAll<HTMLElement>(".reveal, .scroll-item"));
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -54,6 +104,9 @@ export default function Home() {
     );
     elements.forEach((element) => observer.observe(element));
 
+    const impactScene = document.querySelector<HTMLElement>(".impact-sequence");
+    const kineticRail = document.querySelector<HTMLElement>(".kinetic-rail");
+    const motionScenes = Array.from(document.querySelectorAll<HTMLElement>("[data-scroll-scene]"));
     let frame = 0;
     const updateScroll = () => {
       if (frame) return;
@@ -61,6 +114,25 @@ export default function Home() {
         const scrollable = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
         document.documentElement.style.setProperty("--page-progress", String(Math.min(1, window.scrollY / scrollable)));
         document.documentElement.style.setProperty("--scroll-offset", `${Math.min(window.scrollY, 900) * .08}px`);
+        if (impactScene) {
+          const bounds = impactScene.getBoundingClientRect();
+          const travel = Math.max(1, impactScene.offsetHeight - window.innerHeight);
+          const progress = Math.min(1, Math.max(0, -bounds.top / travel));
+          impactScene.style.setProperty("--impact-progress", String(progress));
+          impactScene.style.setProperty("--impact-rotation", `${progress * 160}deg`);
+          impactScene.dataset.step = String(Math.min(3, Math.floor(progress * 4)));
+        }
+        if (kineticRail) {
+          const bounds = kineticRail.getBoundingClientRect();
+          const progress = Math.min(1, Math.max(0, (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height)));
+          kineticRail.style.setProperty("--rail-shift", `${progress * -24}vw`);
+        }
+        motionScenes.forEach((scene) => {
+          const bounds = scene.getBoundingClientRect();
+          const progress = Math.min(1, Math.max(0, (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height)));
+          scene.style.setProperty("--scene-progress", String(progress));
+          scene.style.setProperty("--scene-shift", `${(progress - .5) * -70}px`);
+        });
         frame = 0;
       });
     };
@@ -158,7 +230,9 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section delegation" id="delegation">
+        <KineticRail />
+
+        <section className="section delegation" id="delegation" data-scroll-scene>
           <div className="shell reveal">
             <div className="section-heading compact-heading">
               <div><span className="section-tag">01 / VALUE</span><p>{content.delegation.eyebrow}</p></div>
@@ -167,13 +241,13 @@ export default function Home() {
             </div>
             <div className="outcome-grid">
               {content.delegation.outcomes.map((outcome, index) => (
-                <article key={outcome.title}><span>0{index + 1}</span><h3>{outcome.title}</h3><p>{outcome.description}</p></article>
+                <article className="scroll-item" key={outcome.title}><span>0{index + 1}</span><h3>{outcome.title}</h3><p>{outcome.description}</p></article>
               ))}
             </div>
           </div>
         </section>
 
-        <section className="section services" id="services">
+        <section className="section services" id="services" data-scroll-scene>
           <div className="shell">
             <div className="section-heading reveal">
               <div><span className="section-tag">02 / SERVICES</span><p>{content.servicesIntro.eyebrow}</p></div>
@@ -182,7 +256,7 @@ export default function Home() {
             </div>
             <div className="service-grid">
               {content.services.map((service) => (
-                <article className="service-card reveal" key={service.number}>
+                <article className="service-card scroll-item" key={service.number}>
                   <div className="service-card-top"><span>{service.number}</span><BrandMark /></div>
                   <h3>{service.title}</h3>
                   <p>{service.description}</p>
@@ -194,34 +268,21 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="section journey" id="methodology">
-          <div className="shell reveal">
-            <div className="section-heading compact-heading">
-              <div><span className="section-tag">03 / METHOD</span><p>{content.impactSequence.eyebrow}</p></div>
-              <h2>{content.impactSequence.title}</h2>
-              <p>{content.impactSequence.description}</p>
-            </div>
-            <ol className="journey-grid">
-              {content.impactSequence.steps.map((step) => (
-                <li key={step.number}><span>{step.number}</span><i aria-hidden="true" /><h3>{step.title}</h3><p>{step.description}</p></li>
-              ))}
-            </ol>
-          </div>
-        </section>
+        <ImpactSequence />
 
-        <section className="section why-us" id="why-us">
+        <section className="section why-us" id="why-us" data-scroll-scene>
           <div className="shell reveal">
             <div className="section-heading compact-heading light-heading">
               <div><span className="section-tag">04 / WHY US</span><p>{content.whyUs.eyebrow}</p></div>
               <h2>{content.whyUs.title}</h2>
             </div>
             <div className="why-grid">
-              {content.whyUs.points.map((point) => <article key={point.number}><span>{point.number}</span><h3>{point.title}</h3><p>{point.description}</p></article>)}
+              {content.whyUs.points.map((point) => <article className="scroll-item" key={point.number}><span>{point.number}</span><h3>{point.title}</h3><p>{point.description}</p></article>)}
             </div>
           </div>
         </section>
 
-        <section className="section contact" id="contact">
+        <section className="section contact" id="contact" data-scroll-scene>
           <div className="shell contact-card reveal">
             <div>
               <span className="section-tag">05 / CONTACT</span>
