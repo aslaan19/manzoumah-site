@@ -159,6 +159,7 @@ export default function Home() {
       setIntroPhase("hidden");
       document.body.classList.remove("intro-open");
       window.sessionStorage.setItem(introKey, "1");
+      restoreHashTarget();
     }, 3400);
     return () => {
       window.clearTimeout(leaveTimer);
@@ -167,12 +168,19 @@ export default function Home() {
     };
   }, []);
 
+  function restoreHashTarget() {
+    if (!window.location.hash) return;
+    const target = document.querySelector(window.location.hash);
+    target?.scrollIntoView();
+  }
+
   function skipIntro() {
     window.sessionStorage.setItem("manzoumah-intro-v4", "1");
     setIntroPhase("leaving");
     window.setTimeout(() => {
       setIntroPhase("hidden");
       document.body.classList.remove("intro-open");
+      restoreHashTarget();
     }, 650);
   }
 
