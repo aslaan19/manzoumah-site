@@ -40,8 +40,8 @@ test("renders the Arabic RTL portfolio", async () => {
   assert.match(html, /جاهزية تقود/);
   assert.match(html, /تنفيذ يصنع/);
   assert.match(html, /من الفرصة إلى الأثر، بوضوح/);
-  assert.match(html, /manzoma-header-reference\.png/);
-  assert.match(html, /manzoma-footer-reference\.png/);
+  assert.match(html, /manzoumah-header-logo\.png/);
+  assert.match(html, /manzoumah-stacked\.jpeg/);
   assert.match(html, /ثلاث خدمات\. مسار واحد/);
   assert.match(html, /class="impact-sequence"/);
   assert.match(html, /class="kinetic-rail"/);

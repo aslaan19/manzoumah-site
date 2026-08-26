@@ -25,7 +25,7 @@ function BrandIntro({ phase, onSkip }: { phase: IntroPhase; onSkip: () => void }
       <div className="intro-stage">
         <p className="intro-kicker">GOVERNMENT DELEGATION ADVISORY</p>
         <div className="intro-night-logo">
-          <Image src="/brand/manzoma-footer-reference.png" width={211} height={126} alt={content.brand.logoAlt} priority />
+          <Image src="/brand/manzoumah-stacked.jpeg" width={1600} height={1522} alt={content.brand.logoAlt} priority />
         </div>
         <h2><span>جاهزية تسبق الفرصة.</span><strong>أثر يتبع التنفيذ.</strong></h2>
         <div className="intro-steps" aria-hidden="true"><span>جاهزية</span><span>منافسة</span><span>تنفيذ</span><span>أثر</span></div>
@@ -187,7 +187,7 @@ export default function Home() {
       <header className="site-header">
         <div className="shell header-inner">
           <a className="wordmark" href="#top" aria-label={content.navigation.homeLabel}>
-            <Image src="/brand/manzoma-header-reference.png" width={211} height={119} alt={content.brand.logoAlt} priority />
+            <Image src="/brand/manzoumah-header-logo.png" width={1164} height={390} alt={content.brand.logoAlt} priority />
           </a>
           <nav aria-label={content.navigation.label}>
             {navigation.map((item) => <a className={item.href === "#contact" ? "nav-cta" : ""} href={item.href} key={item.href}>{item.label}</a>)}
@@ -301,7 +301,7 @@ export default function Home() {
 
       <footer>
         <div className="shell footer-layout">
-          <a className="footer-logo" href="#top" aria-label={content.navigation.homeLabel}><Image src="/brand/manzoma-footer-reference.png" width={211} height={126} alt={content.brand.logoAlt} /></a>
+          <a className="footer-logo" href="#top" aria-label={content.navigation.homeLabel}><Image src="/brand/manzoumah-stacked.jpeg" width={1600} height={1522} alt={content.brand.logoAlt} /></a>
           <p>{content.brand.tagline}</p>
           <p>{content.footer.copyright}</p>
           <a href="#top">{content.footer.backToTop} <ArrowIcon /></a>
